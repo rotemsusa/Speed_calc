@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מהירות – תרגול ולמידה</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #e91e8c;
+    --purple: #7c3aed;
+    --cyan: #06b6d4;
+    --yellow: #fbbf24;
+    --green: #10b981;
+    --red: #ef4444;
+    --bg: #0f0a1e;
+    --card: #1a1030;
+    --text: #f0e6ff;
+    --muted: #9575cd;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow-x: hidden; width: 100%; }
+  body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 20% 20%, rgba(124,58,237,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 80% 80%, rgba(233,30,140,0.12) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  .container { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 16px 14px 60px; width: 100%; overflow-x: hidden; }
+  .header { text-align: center; padding: 20px 0 16px; }
+  .header .badge { display: inline-block; background: linear-gradient(135deg, var(--purple), var(--pink)); color: white; font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(24px, 6vw, 44px); font-weight: 900; background: linear-gradient(135deg, #fff 0%, var(--cyan) 50%, var(--pink) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .tabs { display: flex; gap: 6px; margin: 16px 0 14px; background: var(--card); border-radius: 14px; padding: 5px; border: 1px solid rgba(124,58,237,0.2); }
+  .tab-btn { flex: 1; padding: 9px 6px; border: none; border-radius: 10px; background: transparent; color: var(--muted); font-family: 'Heebo', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .tab-btn.active { background: linear-gradient(135deg, var(--purple), var(--pink)); color: white; box-shadow: 0 3px 12px rgba(233,30,140,0.3); }
+  .panel { display: none; animation: fadeIn 0.3s ease; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* LEARN */
+  .learn-section { margin-bottom: 14px; }
+  .section-card { background: var(--card); border-radius: 18px; border: 1px solid rgba(124,58,237,0.25); overflow: hidden; }
+  .section-header { display: flex; align-items: center; gap: 12px; padding: 15px 18px; cursor: pointer; user-select: none; }
+  .section-header:hover { background: rgba(255,255,255,0.03); }
+  .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .section-header h2 { font-size: 16px; font-weight: 700; flex: 1; }
+  .chevron { font-size: 11px; color: var(--muted); transition: transform 0.3s; }
+  .section-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .section-body.open { max-height: 1200px; }
+  .section-content { padding: 0 18px 18px; border-top: 1px solid rgba(124,58,237,0.15); }
+  .formula-box { background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.1)); border: 1px solid rgba(124,58,237,0.4); border-radius: 12px; padding: 14px; text-align: center; margin: 12px 0; }
+  .formula-box .formula { font-size: 22px; font-weight: 700; color: var(--cyan); direction: ltr; display: block; margin-bottom: 4px; }
+  .formula-box .formula-note { font-size: 12px; color: var(--muted); }
+  .info-list { list-style: none; margin-top: 10px; }
+  .info-list li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 13px; line-height: 1.5; display: flex; gap: 8px; align-items: flex-start; }
+  .info-list li:last-child { border-bottom: none; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .sign-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .sign-card { border-radius: 12px; padding: 12px; text-align: center; }
+  .sign-card.pos { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); }
+  .sign-card.neg { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); }
+  .sign-card .sign-label { font-size: 24px; font-weight: 900; margin-bottom: 4px; }
+  .sign-card.pos .sign-label { color: var(--green); }
+  .sign-card.neg .sign-label { color: var(--red); }
+  .sign-card p { font-size: 12px; color: var(--muted); }
+
+  /* CALC */
+  .calc-card { background: var(--card); border-radius: 18px; border: 1px solid rgba(124,58,237,0.25); padding: 20px; margin-bottom: 16px; }
+  .calc-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .calc-subtitle { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+  .calc-type-toggle { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+  .calc-type-btn { padding: 9px 6px; border: 1px solid rgba(124,58,237,0.3); border-radius: 8px; background: transparent; color: var(--muted); font-family: 'Heebo', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .calc-type-btn.active { background: rgba(124,58,237,0.25); border-color: var(--purple); color: white; }
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  @media (max-width: 480px) { .input-row { grid-template-columns: 1fr; } .calc-type-toggle { grid-template-columns: 1fr 1fr 1fr; } }
+  .input-group label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
+  .input-with-unit { display: flex; flex-direction: row-reverse; gap: 4px; align-items: stretch; }
+  .input-with-unit input { flex: 1; min-width: 0; padding: 10px 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(124,58,237,0.3); border-radius: 9px; color: var(--text); font-family: 'Heebo', sans-serif; font-size: 15px; direction: ltr; }
+  .input-with-unit input:focus { outline: none; border-color: var(--purple); }
+  .unit-select { padding: 0 4px; background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.4); border-radius: 9px; color: var(--text); font-family: 'Heebo', sans-serif; font-size: 10px; font-weight: 600; cursor: pointer; appearance: none; -webkit-appearance: none; text-align: center; width: 52px; flex-shrink: 0; }
+  .unit-select:focus { outline: none; border-color: var(--cyan); }
+  .converted-hint { font-size: 11px; color: var(--cyan); margin-top: 4px; min-height: 16px; }
+  .calc-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--purple), var(--pink)); border: none; border-radius: 10px; color: white; font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 14px; transition: all 0.2s; }
+  .calc-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(233,30,140,0.3); }
+  .result-box { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.1)); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 16px; display: none; }
+  .result-box.show { display: block; animation: fadeIn 0.3s; }
+  .result-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .result-value { font-size: 22px; font-weight: 900; color: var(--cyan); margin-bottom: 10px; }
+  .result-steps { font-size: 12px; line-height: 1.8; }
+  .step { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.06); direction: rtl; text-align: right; }
+  .step:last-child { border-bottom: none; }
+  .step-num { display: inline-block; width: 20px; height: 20px; border-radius: 50%; background: var(--purple); color: white; font-size: 10px; font-weight: 700; text-align: center; line-height: 20px; margin-left: 6px; }
+  /* טבלת נוסחה */
+  .formula-table { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin: 4px 0; direction: rtl; }
+  .formula-cell { background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); border-radius: 8px; padding: 8px 10px; text-align: center; }
+  .formula-cell.result { background: rgba(6,182,212,0.15); border-color: rgba(6,182,212,0.4); color: var(--cyan); font-weight: 700; font-size: 15px; }
+  .formula-cell .cell-label { font-size: 9px; color: var(--muted); display: block; margin-bottom: 2px; }
+  .formula-cell .cell-val { font-size: 14px; font-weight: 700; }
+  .formula-op { font-size: 18px; color: var(--muted); font-weight: 700; text-align: center; padding: 0 2px; }
+
+  /* QUIZ */
+  .quiz-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .quiz-progress-bar { flex: 1; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 0 10px; overflow: hidden; }
+  .quiz-progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--pink)); border-radius: 3px; transition: width 0.4s; }
+  .score-badge { background: rgba(251,191,36,0.15); border: 1px solid rgba(251,191,36,0.3); color: var(--yellow); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  .question-card { background: var(--card); border-radius: 18px; border: 1px solid rgba(124,58,237,0.25); padding: 20px; margin-bottom: 12px; }
+  .q-type-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 20px; margin-bottom: 10px; }
+  .q-number { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .q-text { font-size: 15px; font-weight: 600; line-height: 1.6; margin-bottom: 16px; }
+  .q-visual { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 13px; color: var(--cyan); border: 1px solid rgba(6,182,212,0.2); font-family: monospace; }
+  .options { display: grid; gap: 8px; }
+  .option-btn { padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: var(--text); font-family: 'Heebo', sans-serif; font-size: 14px; text-align: right; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+  .option-btn:hover:not(:disabled) { background: rgba(124,58,237,0.15); border-color: var(--purple); transform: translateX(-2px); }
+  .option-btn.correct { background: rgba(16,185,129,0.15); border-color: var(--green); color: var(--green); }
+  .option-btn.wrong { background: rgba(239,68,68,0.15); border-color: var(--red); color: var(--red); }
+  .option-letter { width: 26px; height: 26px; border-radius: 7px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .option-btn.correct .option-letter { background: var(--green); color: white; }
+  .option-btn.wrong .option-letter { background: var(--red); color: white; }
+  .feedback-box { border-radius: 12px; padding: 14px; margin-top: 12px; display: none; animation: fadeIn 0.3s; }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct-fb { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); }
+  .feedback-box.wrong-fb { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); }
+  .feedback-title { font-weight: 700; margin-bottom: 5px; font-size: 14px; }
+  .feedback-text { font-size: 12px; line-height: 1.9; color: rgba(240,230,255,0.8); }
+  .feedback-line { display: block; }
+  .feedback-line.formula { direction: ltr; text-align: left; font-family: monospace; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 3px 8px; margin: 2px 0; }
+  .feedback-line.text { direction: rtl; text-align: right; }
+  .next-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--purple), var(--cyan)); border: none; border-radius: 10px; color: white; font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; display: none; margin-top: 10px; transition: all 0.2s; }
+  .next-btn.show { display: block; animation: fadeIn 0.3s; }
+  .next-btn:hover { transform: translateY(-2px); }
+  .results-screen { text-align: center; padding: 40px 20px; display: none; }
+  .results-screen.show { display: block; animation: fadeIn 0.5s; }
+  .results-emoji { font-size: 60px; margin-bottom: 14px; }
+  .results-title { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+  .results-score { font-size: 16px; color: var(--muted); margin-bottom: 20px; }
+  .results-score span { color: var(--cyan); font-weight: 700; font-size: 28px; }
+  .restart-btn { padding: 12px 28px; background: linear-gradient(135deg, var(--purple), var(--pink)); border: none; border-radius: 10px; color: white; font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .restart-btn:hover { transform: translateY(-2px); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="badge">פיזיקה • כיתה ז׳</div>
+    <h1>מהירות 🏎️</h1>
+    <p>למד, חשב ותרגל – הכל במקום אחד</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('learn',this)">📖 לומד</button>
+    <button class="tab-btn" onclick="(window._simSwitchTab||switchTab)('sim',this)">🚗 סימולטור</button>
+    <button class="tab-btn" onclick="switchTab('calc',this)">🧮 מחשבון</button>
+    <button class="tab-btn" onclick="switchTab('quiz',this)">✏️ תרגול</button>
+  </div>
+
+  <!-- LEARN -->
+  <div id="panel-learn" class="panel active">
+    <div class="learn-section">
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon" style="background:rgba(233,30,140,0.15)">⚡</div>
+          <div><h2>מהירות רגעית</h2><div style="font-size:11px;color:var(--muted)">המהירות ברגע נתון</div></div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body">
+          <div class="section-content">
+            <p style="font-size:13px;line-height:1.7;margin-top:12px">המהירות הרגעית היא המהירות שקצב התנועה של גוף נתון <strong>ברגע מסוים</strong> – בלי לפרט מה קרה לפני כן.</p>
+            <div class="formula-box">
+              <span class="formula">V = Δx / Δt</span>
+              <div class="formula-note">כאשר Δt קטן מאוד (מגיע לאפס)</div>
+            </div>
+            <ul class="info-list">
+              <li><span class="dot" style="background:var(--pink)"></span><span>זה בדיוק מה שמציג <strong>מד המהירות</strong> ברכב – המהירות ברגע הנוכחי</span></li>
+              <li><span class="dot" style="background:var(--pink)"></span><span>אם אילנה נוסעת 90 קמ"ש, זה אומר שאם תנסע <em>בדיוק באותה מהירות</em> שעה שלמה – תעבור 90 ק"מ</span></li>
+              <li><span class="dot" style="background:var(--pink)"></span><span>למדידה מדויקת לוקחים פרק זמן קצן ביותר (Δt → 0)</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="learn-section">
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon" style="background:rgba(6,182,212,0.15)">📊</div>
+          <div><h2>מהירות ממוצעת</h2><div style="font-size:11px;color:var(--muted)">על פני כל הנסיעה</div></div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body">
+          <div class="section-content">
+            <p style="font-size:13px;line-height:1.7;margin-top:12px">מהירות שווה לקבועה שבה הגוף היה עובר את <strong>אותו מרחק כולל</strong> ב<strong>אותו זמן כולל</strong>.</p>
+            <div class="formula-box">
+              <span class="formula">V̄ = Δx / Δt</span>
+              <div class="formula-note">Δx = מרחק כולל | Δt = זמן כולל</div>
+            </div>
+            <div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px;margin-top:10px;font-size:13px;line-height:1.8">
+              <strong style="color:var(--yellow)">✨ דוגמה – אילנה:</strong><br>
+              📏 מרחק: 22.5 ק"מ &nbsp;|&nbsp; ⏱️ זמן: 0.5 שעות<br>
+              V̄ = 22.5 / 0.5 = <strong style="color:var(--cyan)">45 קמ"ש</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="learn-section">
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon" style="background:rgba(124,58,237,0.15)">±</div>
+          <div><h2>סימן המהירות (+ או −)</h2><div style="font-size:11px;color:var(--muted)">כיוון התנועה</div></div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body">
+          <div class="section-content">
+            <p style="font-size:13px;line-height:1.7;margin-top:12px">הסימן מסמן את <strong>כיוון</strong> התנועה על ציר x:</p>
+
+            <!-- SVG axis visual -->
+            <svg viewBox="0 0 340 90" style="width:100%;margin:12px 0;border-radius:12px;background:rgba(0,0,0,0.3);padding:4px" xmlns="http://www.w3.org/2000/svg">
+              <!-- axis line -->
+              <line x1="20" y1="45" x2="315" y2="45" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
+              <polygon points="315,40 325,45 315,50" fill="rgba(255,255,255,0.35)"/>
+              <!-- zero tick -->
+              <line x1="172" y1="38" x2="172" y2="52" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+              <text x="172" y="65" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="11" font-family="Heebo">0</text>
+              <text x="320" y="48" fill="rgba(255,255,255,0.5)" font-size="11" font-family="Heebo">x</text>
+              <!-- positive direction (right) -->
+              <line x1="172" y1="28" x2="290" y2="28" stroke="#10b981" stroke-width="2.5"/>
+              <polygon points="290,23 302,28 290,33" fill="#10b981"/>
+              <text x="225" y="20" text-anchor="middle" fill="#10b981" font-size="11" font-weight="bold" font-family="Heebo">+ חיובי</text>
+              <!-- car going right -->
+              <text x="240" y="42" font-size="16">🚗</text>
+              <!-- positive label -->
+              <text x="295" y="20" fill="#10b981" font-size="10" font-family="Heebo">ימינה</text>
+              <!-- negative direction (left) -->
+              <line x1="172" y1="62" x2="55" y2="62" stroke="#ef4444" stroke-width="2.5"/>
+              <polygon points="55,57 43,62 55,67" fill="#ef4444"/>
+              <text x="110" y="80" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="bold" font-family="Heebo">− שלילי</text>
+              <!-- car going left (flipped) -->
+              <text x="80" y="57" font-size="16" transform="scale(-1,1) translate(-176,0)">🚗</text>
+              <!-- negative label -->
+              <text x="38" y="80" fill="#ef4444" font-size="10" font-family="Heebo">שמאלה</text>
+            </svg>
+            <div class="sign-grid">
+              <div class="sign-card pos">
+                <div class="sign-label">+</div>
+                <p>תנועה לכיוון <strong>החיובי</strong> של הציר<br>(בד"כ שמאל→ימין)</p>
+              </div>
+              <div class="sign-card neg">
+                <div class="sign-label">−</div>
+                <p>תנועה לכיוון <strong>השלילי</strong> של הציר<br>(בד"כ ימין→שמאל)</p>
+              </div>
+            </div>
+            <ul class="info-list" style="margin-top:10px">
+              <li><span class="dot" style="background:var(--green)"></span><span><strong style="color:var(--green)">V = +50 קמ"ש</strong> – הרכב נוסע ימינה במהירות 50 קמ"ש</span></li>
+              <li><span class="dot" style="background:var(--red)"></span><span><strong style="color:var(--red)">V = −50 קמ"ש</strong> – הרכב נוסע שמאלה באותה מהירות בדיוק</span></li>
+              <li><span class="dot" style="background:var(--yellow)"></span><span>הסימן <strong>לא</strong> משנה את גודל המהירות – רק את <strong>הכיוון</strong>!</span></li>
+              <li><span class="dot" style="background:var(--purple)"></span><span>חשוב להגדיר מראש מאיפה עולה הציר החיובי – זה קובע מה + ומה −</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="learn-section">
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon" style="background:rgba(16,185,129,0.15)">📌</div>
+          <div><h2>סיכום – כל הנוסחאות</h2><div style="font-size:11px;color:var(--muted)">מה צריך לזכור</div></div>
+          <div class="chevron">▼</div>
+        </div>
+        <div class="section-body">
+          <div class="section-content">
+            <ul class="info-list">
+              <li><span class="dot" style="background:var(--green)"></span><span><strong>נוסחה בסיסית:</strong> V = Δx / Δt (גם לרגעית וגם לממוצעת)</span></li>
+              <li><span class="dot" style="background:var(--cyan)"></span><span><strong>מרחק:</strong> Δx = V · Δt</span></li>
+              <li><span class="dot" style="background:var(--pink)"></span><span><strong>זמן:</strong> Δt = Δx / V</span></li>
+              <li><span class="dot" style="background:var(--yellow)"></span><span><strong>המרת יחידות:</strong> קמ"ש ÷ 3.6 = מ/ש</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMULATOR -->
+  <div id="panel-sim" class="panel">
+    <div class="section-card" style="margin-bottom:14px;overflow:visible">
+      <div style="padding:16px 18px">
+        <div style="font-size:17px;font-weight:700;margin-bottom:4px">🚗 סימולטור מהירות</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">גרור את המכונית על הציר – ראה את החישוב בזמן אמת</div>
+
+        <!-- Axis canvas -->
+        <div style="position:relative;margin-bottom:8px">
+          <canvas id="simCanvas" style="width:100%;height:120px;border-radius:12px;background:rgba(0,0,0,0.3);touch-action:none;cursor:grab;display:block"></canvas>
+        </div>
+
+        <!-- Time slider -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;direction:rtl">
+          <label style="font-size:12px;color:var(--muted);white-space:nowrap">Δt (שניות):</label>
+          <input type="range" id="simTime" min="1" max="20" value="5" step="1"
+            style="flex:1;accent-color:var(--purple)">
+          <span id="simTimeVal" style="font-size:13px;font-weight:700;color:var(--cyan);min-width:24px">5</span>
+        </div>
+
+        <!-- Live formula display -->
+        <div id="simResult" style="background:rgba(0,0,0,0.3);border-radius:12px;padding:14px;direction:rtl">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+            <div style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:10px;color:var(--muted)">x₀ (התחלה)</div>
+              <div id="simX0" style="font-size:16px;font-weight:700">0 מ</div>
+            </div>
+            <div style="background:rgba(233,30,140,0.15);border:1px solid rgba(233,30,140,0.3);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:10px;color:var(--muted)">x₁ (סוף)</div>
+              <div id="simX1" style="font-size:16px;font-weight:700;color:var(--pink)">40 מ</div>
+            </div>
+            <div style="background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.3);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:10px;color:var(--muted)">Δt</div>
+              <div id="simDt" style="font-size:16px;font-weight:700;color:var(--cyan)">5 ש׳</div>
+            </div>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:10px;font-size:12px;line-height:2">
+            <div style="color:var(--muted);direction:rtl">חישוב:</div>
+            <div id="simCalc"></div>
+            <div style="margin-top:6px;font-size:15px;font-weight:700;color:var(--cyan)" id="simAnswer"></div>
+          </div>
+        </div>
+
+        <!-- Sign explanation -->
+        <div id="simSignNote" style="margin-top:10px;padding:10px 14px;border-radius:10px;font-size:12px;display:none"></div>
+      </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="section-card">
+      <div style="padding:14px 18px;font-size:13px;line-height:1.8;color:rgba(240,230,255,0.8)">
+        <div style="font-weight:700;margin-bottom:8px;color:var(--text)">💡 איך להשתמש:</div>
+        <div>• <strong>גרור את 🚗</strong> לשנות את נקודת הסוף</div>
+        <div>• <strong>גרור את 🏁</strong> לשנות את נקודת ההתחלה</div>
+        <div>• <strong>הסרגל</strong> שולט בזמן Δt</div>
+        <div style="margin-top:8px">נסה לגרור את המכונית <strong>שמאלה מנקודת ההתחלה</strong> – תראה מה קורה לסימן!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALC -->
+  <div id="panel-calc" class="panel">
+    <div class="calc-card">
+      <div class="calc-title">🧮 מחשבון מהירות</div>
+      <div class="calc-subtitle">בחר מה לחשב והזן נתונים</div>
+      <div style="background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;line-height:1.6">
+        📊 <strong style="color:var(--cyan)">שים לב:</strong> מחשבון זה מחשב <strong>מהירות ממוצעת</strong> – כי אתה מזין מרחק כולל וזמן כולל.<br>
+        <span style="color:var(--muted)">מהירות רגעית היא המהירות ברגע ספציפי (כמו מד מהירות ברכב) ולא ניתן לחשבה כך.</span>
+      </div>
+      <div class="calc-type-toggle">
+        <button class="calc-type-btn active" onclick="setCalcMode('speed',this)">חשב V</button>
+        <button class="calc-type-btn" onclick="setCalcMode('dist',this)">חשב Δx</button>
+        <button class="calc-type-btn" onclick="setCalcMode('time',this)">חשב Δt</button>
+      </div>
+      <div id="calc-inputs"></div>
+      <button class="calc-btn" onclick="calculate()">⚡ חשב</button>
+      <div class="result-box" id="result-box">
+        <div class="result-label">תוצאה</div>
+        <div class="result-value" id="result-value"></div>
+        <div class="result-steps" id="result-steps"></div>
+      </div>
+    </div>
+    <div class="calc-card" style="border-color:rgba(251,191,36,0.2)">
+      <div class="calc-title" style="color:var(--yellow)">💡 טיפ</div>
+      <ul class="info-list">
+        <li><span class="dot" style="background:var(--yellow)"></span><span>בחר יחידות מהתפריט לצד כל שדה – המחשבון ממיר הכל אוטומטית</span></li>
+        <li><span class="dot" style="background:var(--yellow)"></span><span>הטקסט הכחול מתחת לכל שדה מציג את הערך ביחידות אחרות בזמן אמת</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="panel-quiz" class="panel">
+    <div class="quiz-top">
+      <div class="score-badge">⭐ <span id="score-display">0</span></div>
+      <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div id="q-counter" style="font-size:12px;color:var(--muted)">1/8</div>
+    </div>
+    <div id="question-area"></div>
+    <div id="results-area" class="results-screen"></div>
+  </div>
+</div>
+
+<script>
+function switchTab(tab, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleSection(header) {
+  const body = header.nextElementSibling;
+  const chevron = header.querySelector('.chevron');
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.section-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.chevron').forEach(c => c.style.transform = '');
+  if (!isOpen) { body.classList.add('open'); chevron.style.transform = 'rotate(180deg)'; }
+}
+
+let calcMode = 'speed';
+function setCalcMode(mode, btn) {
+  calcMode = mode;
+  document.querySelectorAll('.calc-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('result-box').classList.remove('show');
+  renderCalcInputs();
+}
+
+// יחידות וגורמי המרה לבסיס (מטרים ושניות)
+const distUnits = { 'מ': 1, 'ק"מ': 1000, 'ס"מ': 0.01 };
+const timeUnits = { 'ש׳': 1, 'דקות': 60, 'שניות': 3600 }; // כמה שניות ב-1 יחידה? לא. נמיר ל-שעות
+// נעבוד ביחידות: מרחק=מטרים, זמן=שניות, מהירות=מ/ש
+// המרות:
+const distToM  = { 'סמ': 0.01, 'מ': 1, 'קמ': 1000 };
+const timeToS  = { 'שניות': 1, 'דקות': 60, 'שעות': 3600 };
+const speedToMS = { 'מש': 1, 'קמש': 1/3.6, 'סמש': 0.01 };
+
+function renderCalcInputs() {
+  const distUnitsArr = [['סמ','ס"מ'],['מ','מ'],['קמ','ק"מ']];
+  const timeUnitsArr = [['שניות','שניות'],['דקות','דקות'],['שעות','שעות']];
+  const speedUnitsArr = [['מש','מ/ש'],['קמש','קמ"ש'],['סמש','ס"מ/ש']];
+  const distOpts = distUnitsArr.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');
+  const timeOpts = timeUnitsArr.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');
+  const speedOpts = speedUnitsArr.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');
+
+  const fields = {
+    speed: `
+      <div class="input-row">
+        <div class="input-group">
+          <label>Δx – מרחק</label>
+          <div class="input-with-unit">
+            <input type="number" id="input-dx" placeholder="22.5" step="any" oninput="showHint()">
+            <select class="unit-select" id="unit-dx" onchange="showHint()">${distOpts}</select>
+          </div>
+          <div class="converted-hint" id="hint-dx"></div>
+        </div>
+        <div class="input-group">
+          <label>Δt – זמן</label>
+          <div class="input-with-unit">
+            <input type="number" id="input-dt" placeholder="0.5" step="any" oninput="showHint()">
+            <select class="unit-select" id="unit-dt" onchange="showHint()">${timeOpts}</select>
+          </div>
+          <div class="converted-hint" id="hint-dt"></div>
+        </div>
+      </div>`,
+    dist: `
+      <div class="input-row">
+        <div class="input-group">
+          <label>V – מהירות</label>
+          <div class="input-with-unit">
+            <input type="number" id="input-v" placeholder="45" step="any" oninput="showHint()">
+            <select class="unit-select" id="unit-v" onchange="showHint()">${speedOpts}</select>
+          </div>
+          <div class="converted-hint" id="hint-v"></div>
+        </div>
+        <div class="input-group">
+          <label>Δt – זמן</label>
+          <div class="input-with-unit">
+            <input type="number" id="input-dt" placeholder="2" step="any" oninput="showHint()">
+            <select class="unit-select" id="unit-dt" onchange="showHint()">${timeOpts}</select>
+          </div>
+          <div class="converted-hint" id="hint-dt"></div>
+        </div>
+      </div>`,
+    time: `
+      <div class="input-row">
+        <div class="input-group">
+          <label>V – מהירות</label>
+          <div class="input-with-unit">
+            <input type="number" id="input-v" placeholder="90" step="any" oninput="showHint()">
+            <select class="unit-select" id="unit-v" onchange="showHint()">${speedOpts}</select>
+          </div>
+          <div class="converted-hint" id="hint-v"></div>
+        </div>
+        <div class="input-group">
+          <label>Δx – מרחק</label>
+          <div class="input-with-unit">
+            <input type="number" id="input-dx" placeholder="180" step="any" oninput="showHint()">
+            <select class="unit-select" id="unit-dx" onchange="showHint()">${distOpts}</select>
+          </div>
+          <div class="converted-hint" id="hint-dx"></div>
+        </div>
+      </div>`
+  };
+
+  // fix default selected
+  document.getElementById('calc-inputs').innerHTML = fields[calcMode];
+
+  // set smart defaults by selectedIndex after DOM update
+  const dxSel = document.getElementById('unit-dx');
+  if(dxSel) dxSel.selectedIndex = 2; // ק"מ = index 2
+
+  const dtSel = document.getElementById('unit-dt');
+  if(dtSel) dtSel.selectedIndex = 2; // שעות = index 2
+
+  const vSel = document.getElementById('unit-v');
+  if(vSel) vSel.selectedIndex = 1; // קמ"ש = index 1
+}
+
+function getVal(id) { return parseFloat(document.getElementById('input-'+id)?.value); }
+function getUnit(id) { return document.getElementById('unit-'+id)?.value; }
+
+// המרה ל-מטרים ושניות
+function toMeters(val, unit) { return val * (distToM[unit] || 1); }
+function toSeconds(val, unit) { return val * (timeToS[unit] || 1); }
+function toMS(val, unit) { return val * (speedToMS[unit] || 1); }
+
+function fmt(n) {
+  if (Math.abs(n) >= 1000) return n.toFixed(1).replace(/\.0$/,'');
+  if (Math.abs(n) >= 10) return n.toFixed(2).replace(/\.?0+$/,'');
+  return n.toFixed(4).replace(/\.?0+$/,'');
+}
+
+function showHint() {
+  const hints = {
+    dx: () => {
+      const v=getVal('dx'), u=getUnit('dx');
+      if(isNaN(v)||!u) return '';
+      if(u==='קמ') return ''; // ברירת מחדל – אין צורך להמיר
+      const m=toMeters(v,u);
+      if(u==='מ') return `= ${fmt(m/1000)} ק"מ`;
+      return `= ${fmt(m)} מ = ${fmt(m/1000)} ק"מ`;
+    },
+    dt: () => {
+      const v=getVal('dt'), u=getUnit('dt');
+      if(isNaN(v)||!u) return '';
+      if(u==='שעות') return ''; // ברירת מחדל – אין צורך להמיר
+      const s=toSeconds(v,u);
+      if(u==='דקות') return `= ${fmt(s)} שניות = ${fmt(s/3600)} שעות`;
+      return `= ${fmt(s/60)} דקות = ${fmt(s/3600)} שעות`;
+    },
+    v: () => {
+      const v=getVal('v'), u=getUnit('v');
+      if(isNaN(v)||!u) return '';
+      if(u==='קמש') return ''; // ברירת מחדל – אין צורך להמיר
+      const ms=toMS(v,u);
+      if(u==='מש') return `= ${fmt(ms*3.6)} קמ"ש`;
+      return `= ${fmt(ms)} מ/ש = ${fmt(ms*3.6)} קמ"ש`;
+    }
+  };
+  ['dx','dt','v'].forEach(id => {
+    const el = document.getElementById('hint-'+id);
+    if(el && hints[id]) el.textContent = hints[id]();
+  });
+}
+
+function calculate() {
+  const rb = document.getElementById('result-box');
+  let label, steps;
+  const dispDist = {'סמ':'ס"מ','מ':'מ','קמ':'ק"מ'};
+  const dispSpeed = {'מש':'מ/ש','קמש':'קמ"ש','סמש':'ס"מ/ש'};
+
+  // הסברי המרה פדגוגיים
+  function explainDist(val, unit) {
+    if(unit==='קמ') return `${val} ק"מ × 1000 = <strong>${fmt(toMeters(val,unit))} מ</strong> <em style="color:var(--muted);font-size:11px">(כי הנוסחה דורשת מטרים)</em>`;
+    if(unit==='סמ') return `${val} ס"מ ÷ 100 = <strong>${fmt(toMeters(val,unit))} מ</strong> <em style="color:var(--muted);font-size:11px">(כי הנוסחה דורשת מטרים)</em>`;
+    return null;
+  }
+  function explainTime(val, unit) {
+    const s = toSeconds(val, unit);
+    if(unit==='שעות') return `${val} שעות × 3600 = <strong>${fmt(s)} שניות</strong> <em style="color:var(--muted);font-size:11px">(ממירים לשניות כדי שיתאים למטרים)</em>`;
+    if(unit==='דקות') return `${val} דקות × 60 = <strong>${fmt(s)} שניות</strong> <em style="color:var(--muted);font-size:11px">(ממירים לשניות כדי שיתאים למטרים)</em>`;
+    return null;
+  }
+  function explainSpeed(val, unit) {
+    const ms = toMS(val, unit);
+    if(unit==='קמש') return `${val} קמ"ש ÷ 3.6 = <strong>${fmt(ms)} מ/ש</strong> <em style="color:var(--muted);font-size:11px">(כי הנוסחה דורשת מ/ש)</em>`;
+    if(unit==='סמש') return `${val} ס"מ/ש ÷ 100 = <strong>${fmt(ms)} מ/ש</strong> <em style="color:var(--muted);font-size:11px">(כי הנוסחה דורשת מ/ש)</em>`;
+    return null;
+  }
+  function formulaTable(res, eq, a, op, b, resVal, resUnit, aVal, aUnit, bVal, bUnit) {
+    return `
+      <div class="formula-table">
+        <div class="formula-cell result">
+          <span class="cell-label">${res}</span>
+          <span class="cell-val">${resVal} ${resUnit}</span>
+        </div>
+        <div class="formula-op">${eq}</div>
+        <div class="formula-cell">
+          <span class="cell-label">${a}</span>
+          <span class="cell-val">${aVal} ${aUnit}</span>
+        </div>
+        <div class="formula-op">${op}</div>
+        <div class="formula-cell">
+          <span class="cell-label">${b}</span>
+          <span class="cell-val">${bVal} ${bUnit}</span>
+        </div>
+      </div>`;
+  }
+  function convStep(num, label, explanation) {
+    if(!explanation) return '';
+    return `<div class="step" style="direction:rtl;text-align:right"><span class="step-num">${num}</span> <strong>${label}:</strong> ${explanation}</div>`;
+  }
+
+  if (calcMode === 'speed') {
+    const dxRaw=getVal('dx'), dtRaw=getVal('dt');
+    const dxU=getUnit('dx'), dtU=getUnit('dt');
+    if(isNaN(dxRaw)||isNaN(dtRaw)||dtRaw===0) { alert('נא הזן נתונים תקינים!'); return; }
+    const dxM = toMeters(dxRaw, dxU);
+    const dtS = toSeconds(dtRaw, dtU);
+    const vMS = dxM / dtS;
+    const vKMH = vMS * 3.6;
+    const naturalV = dtU==='שעות' ? vKMH : (dtU==='דקות' ? vMS*60 : vMS);
+    const naturalUnit = dtU==='שעות' ? 'קמ"ש' : (dtU==='דקות' ? 'מ/דקה' : 'מ/ש');
+    const needConvert = !(dxU==='קמ' && dtU==='שעות') && !(dxU==='מ' && dtU==='שניות');
+    label = `V = ${fmt(naturalV)} ${naturalUnit}`;
+    if (needConvert) {
+      const sDist = explainDist(dxRaw,dxU);
+      const sTime = explainTime(dtRaw,dtU);
+      let n=1, convSteps='';
+      convSteps += convStep(n++,'המרת מרחק',sDist);
+      convSteps += convStep(n++,'המרת זמן',sTime);
+      convSteps += `<div class="step" style="direction:rtl;text-align:right"><span class="step-num">${n++}</span> V = Δx ÷ Δt = <strong>${fmt(dxM)} מ</strong> ÷ <strong>${fmt(dtS)} ש׳</strong> = ${fmt(vMS)} מ/ש</div>`;
+      convSteps += `<div class="step" style="direction:rtl;text-align:right"><span class="step-num">${n}</span> המרה לקמ"ש: <strong>${fmt(vMS)}</strong> × 3.6 = <strong style="color:var(--cyan)">${fmt(vKMH)} קמ"ש</strong></div>`;
+      steps = `<div class="step" style="direction:rtl;text-align:right;background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2)">⚠️ <em style="font-size:12px;color:var(--yellow)">היחידות לא תואמות – הנוסחה דורשת יחידות עקביות (מ+שניות → מ/ש, או ק"מ+שעות → קמ"ש). ממירים לבסיס מ/ש.</em></div>${convSteps}`;
+    } else {
+      steps = formulaTable('V','=','Δx','÷','Δt', fmt(naturalV), naturalUnit, dxRaw, dispDist[dxU], dtRaw, dtU);
+    }
+  } else if (calcMode === 'dist') {
+    const vRaw=getVal('v'), dtRaw=getVal('dt');
+    const vU=getUnit('v'), dtU=getUnit('dt');
+    if(isNaN(vRaw)||isNaN(dtRaw)) { alert('נא הזן נתונים תקינים!'); return; }
+    const vMS = toMS(vRaw, vU);
+    const dtS = toSeconds(dtRaw, dtU);
+    const dxM = vMS * dtS;
+    const dxKM = dxM/1000;
+    const needConvert = !(vU==='קמש' && dtU==='שעות') && !(vU==='מש' && dtU==='שניות');
+    label = needConvert ? `Δx = ${fmt(dxM)} מ` : (vU==='קמש' ? `Δx = ${fmt(dxKM)} ק"מ` : `Δx = ${fmt(dxM)} מ`);
+    if (needConvert) {
+      const sSpeed = explainSpeed(vRaw,vU);
+      const sTime = explainTime(dtRaw,dtU);
+      let n=1, convSteps='';
+      convSteps += convStep(n++,'המרת מהירות',sSpeed);
+      convSteps += convStep(n++,'המרת זמן',sTime);
+      convSteps += `<div class="step" style="direction:rtl;text-align:right"><span class="step-num">${n++}</span> Δx = V × Δt = <strong>${fmt(vMS)} מ/ש</strong> × <strong>${fmt(dtS)} ש׳</strong></div>`;
+      convSteps += `<div class="step" style="direction:rtl;text-align:right"><span class="step-num">${n}</span> <strong style="color:var(--cyan)">Δx = ${fmt(dxM)} מ = ${fmt(dxKM)} ק"מ</strong></div>`;
+      steps = `<div class="step" style="direction:rtl;text-align:right;background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2)">⚠️ <em style="font-size:12px;color:var(--yellow)">היחידות לא תואמות – ממירים לבסיס מ/ש.</em></div>${convSteps}`;
+    } else {
+      const natDx = vU==='קמש' ? dxKM : dxM;
+      const natUnit = vU==='קמש' ? 'ק"מ' : 'מ';
+      steps = formulaTable('Δx','=','V','×','Δt', fmt(natDx), natUnit, vRaw, dispSpeed[vU], dtRaw, dtU);
+    }
+  } else {
+    const vRaw=getVal('v'), dxRaw=getVal('dx');
+    const vU=getUnit('v'), dxU=getUnit('dx');
+    if(isNaN(vRaw)||isNaN(dxRaw)||vRaw===0) { alert('נא הזן נתונים תקינים!'); return; }
+    const vMS = toMS(vRaw, vU);
+    const dxM = toMeters(dxRaw, dxU);
+    const dtS = dxM / vMS;
+    const needConvert = !(vU==='קמש' && dxU==='קמ') && !(vU==='מש' && dxU==='מ');
+    const natDt = vU==='קמש' ? dtS/3600 : dtS;
+    const natDtUnit = vU==='קמש' ? 'שעות' : 'שניות';
+    // כשיחידות מעורבות, הצג את התוצאה ביחידה הכי ברורה
+    const bestDt = dtS < 60 ? dtS : dtS < 3600 ? dtS/60 : dtS/3600;
+    const bestDtUnit = dtS < 60 ? 'שניות' : dtS < 3600 ? 'דקות' : 'שעות';
+    label = needConvert ? `Δt = ${fmt(bestDt)} ${bestDtUnit}` : `Δt = ${fmt(natDt)} ${natDtUnit}`;
+    if (needConvert) {
+      const sSpeed = explainSpeed(vRaw,vU);
+      const sDist = explainDist(dxRaw,dxU);
+      let n=1, convSteps='';
+      convSteps += convStep(n++,'המרת מהירות',sSpeed);
+      convSteps += convStep(n++,'המרת מרחק',sDist);
+      convSteps += `<div class="step" style="direction:rtl;text-align:right"><span class="step-num">${n++}</span> Δt = Δx ÷ V = <strong>${fmt(dxM)} מ</strong> ÷ <strong>${fmt(vMS)} מ/ש</strong></div>`;
+      convSteps += `<div class="step" style="direction:rtl;text-align:right"><span class="step-num">${n}</span> <strong style="color:var(--cyan)">Δt = ${fmt(dtS)} שניות = ${fmt(dtS/60)} דקות = ${fmt(dtS/3600)} שעות</strong></div>`;
+      steps = `<div class="step" style="direction:rtl;text-align:right;background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2)">⚠️ <em style="font-size:12px;color:var(--yellow)">היחידות לא תואמות – ממירים לבסיס מ/ש.</em></div>${convSteps}`;
+    } else {
+      steps = formulaTable('Δt','=','Δx','÷','V', fmt(natDt), natDtUnit, dxRaw, dispDist[dxU], vRaw, dispSpeed[vU]);
+    }
+  }
+
+  document.getElementById('result-value').textContent = label;
+  document.getElementById('result-steps').innerHTML = steps;
+  rb.classList.add('show');
+}
+
+const questions = [
+  { type:'מהירות ממוצעת', tc:'rgba(6,182,212,0.15)', tt:'var(--cyan)',
+    q:'אילנה נוסעת לעבודה. אורך הדרך 22.5 ק"מ, משך הנסיעה חצי שעה. מה המהירות הממוצעת?',
+    vis:'📏 Δx = 22.5 ק"מ\n⏱️ Δt = 0.5 שעות',
+    opts:['45 קמ"ש','90 קמ"ש','22.5 קמ"ש','11.25 קמ"ש'], ans:0,
+    exp:'V̄ = Δx/Δt = 22.5 / 0.5 = 45 קמ"ש\nחלקים את המרחק בזמן הכולל.' },
+  { type:'סימן מהירות', tc:'rgba(124,58,237,0.15)', tt:'#a78bfa',
+    q:'מכונית נוסעת לכיוון השלילי של ציר ה-x. מה סימן המהירות שלה?',
+    vis:'← 🚗 ......... 0 ......... →\n                      x',
+    opts:['V > 0 (חיובי)','V < 0 (שלילי)','V = 0','תלוי במהירות'], ans:1,
+    exp:'כיוון שמאל = הכיוון השלילי.\nV שלילי → תנועה לכיוון שלילי של ציר x.' },
+  { type:'מהירות רגעית', tc:'rgba(233,30,140,0.15)', tt:'var(--pink)',
+    q:'מד המהירות ברכב מציג 120 קמ"ש. מה הוא מודד?',
+    opts:['המהירות הממוצעת מתחילת הנסיעה','המהירות הרגעית ברגע זה','המהירות המקסימלית','המהירות המינימלית'], ans:1,
+    exp:'מד מהירות = מהירות רגעית בלבד.\nהוא מציג את המהירות בדיוק ברגע הנוכחי.' },
+  { type:'חישוב מרחק', tc:'rgba(16,185,129,0.15)', tt:'var(--green)',
+    q:'רכב נוסע ב-60 קמ"ש במשך 2 שעות. כמה ק"מ עבר?',
+    vis:'⚡ V = 60 קמ"ש\n⏱️ Δt = 2 שעות',
+    opts:['30 ק"מ','62 ק"מ','120 ק"מ','240 ק"מ'], ans:2,
+    exp:'Δx = V × Δt = 60 × 2 = 120 ק"מ\nמוציאים Δx מהנוסחה: V = Δx/Δt' },
+  { type:'מהירות ממוצעת', tc:'rgba(6,182,212,0.15)', tt:'var(--cyan)',
+    q:'ילד רץ 100 מטר ב-20 שניות. מה המהירות הממוצעת?',
+    vis:'🏃 Δx = 100 מ\n⏱️ Δt = 20 ש',
+    opts:['2000 מ/ש','0.2 מ/ש','5 מ/ש','20 מ/ש'], ans:2,
+    exp:'V̄ = 100/20 = 5 מ/ש\nשים לב ליחידות: מטרים ושניות!' },
+  { type:'חישוב זמן', tc:'rgba(251,191,36,0.15)', tt:'var(--yellow)',
+    q:'מכונית נוסעת ב-90 קמ"ש. כמה זמן לעבור 45 ק"מ?',
+    vis:'⚡ V = 90 קמ"ש\n📏 Δx = 45 ק"מ',
+    opts:['2 שעות','0.5 שעות (30 דקות)','45 דקות','1 שעה'], ans:1,
+    exp:'Δt = Δx/V = 45/90 = 0.5 שעות = 30 דקות' },
+  { type:'סימן מהירות', tc:'rgba(124,58,237,0.15)', tt:'#a78bfa',
+    q:'רכב מתחיל ב-x=60מ׳ ומגיע ל-x=−20מ׳ ב-5 שניות. מה סימן המהירות?',
+    vis:'📍 x₀ = 60 מ\n📍 x₁ = −20 מ\n⏱️ Δt = 5 ש',
+    opts:['חיובי (+)','שלילי (−)','אפס','אי אפשר לדעת'], ans:1,
+    exp:'Δx = (−20) − 60 = −80 מ\nV = −80/5 = −16 מ/ש → שלילי!' },
+  { type:'הבנה מושגית', tc:'rgba(16,185,129,0.15)', tt:'var(--green)',
+    q:'מה ההבדל בין מהירות רגעית למהירות ממוצעת?',
+    opts:['אין הבדל, הן אותו דבר','רגעית = ברגע מסוים; ממוצעת = על כל הנסיעה','רגעית תמיד גדולה מממוצעת','ממוצעת משתנה, רגעית קבועה'], ans:1,
+    exp:'רגעית = כמו מד מהירות – ברגע ספציפי.\nממוצעת = מרחק כולל ÷ זמן כולל.' }
+];
+
+let currentQ=0, score=0, answered=false;
+
+function renderQuestion() {
+  const q=questions[currentQ], total=questions.length;
+  document.getElementById('q-counter').textContent=`${currentQ+1}/${total}`;
+  document.getElementById('progress-fill').style.width=`${(currentQ/total)*100}%`;
+  const L=['א','ב','ג','ד'];
+  const vis = q.vis ? `<div class="q-visual">${q.vis.replace(/\n/g,'<br>')}</div>` : '';
+  document.getElementById('question-area').innerHTML = `
+    <div class="question-card">
+      <div class="q-type-tag" style="background:${q.tc};color:${q.tt}">${q.type}</div>
+      <div class="q-number">שאלה ${currentQ+1} מתוך ${total}</div>
+      <div class="q-text">${q.q}</div>
+      ${vis}
+      <div class="options">${q.opts.map((o,i)=>`<button class="option-btn" onclick="answer(${i})"><span class="option-letter">${L[i]}</span>${o}</button>`).join('')}</div>
+      <div class="feedback-box" id="feedback"></div>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQ()">${currentQ<total-1?'שאלה הבאה ←':'לתוצאות 🏁'}</button>`;
+  answered=false;
+}
+
+function answer(idx) {
+  if(answered) return;
+  answered=true;
+  const q=questions[currentQ];
+  document.querySelectorAll('.option-btn').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.ans) b.classList.add('correct');
+    else if(i===idx) b.classList.add('wrong');
+  });
+  const ok=idx===q.ans;
+  if(ok) { score++; document.getElementById('score-display').textContent=score; }
+  const fb=document.getElementById('feedback');
+  fb.className='feedback-box show '+(ok?'correct-fb':'wrong-fb');
+  const expLines = q.exp.split('\n').map(line => {
+    // אם השורה מכילה נוסחה (= עם מספרים, /, ×, Δ) – הצג LTR
+    const isFormula = /[=\/×÷Δ].*\d|\d.*[=\/×÷Δ]/.test(line);
+    const cls = isFormula ? 'formula' : 'text';
+    return `<span class="feedback-line ${cls}">${line}</span>`;
+  }).join('');
+  fb.innerHTML=`<div class="feedback-title">${ok?'✅ נכון מאוד!':'❌ לא מדויק'}</div><div class="feedback-text">${expLines}</div>`;
+  document.getElementById('next-btn').classList.add('show');
+}
+
+function nextQ() {
+  currentQ++;
+  if(currentQ>=questions.length) {
+    document.getElementById('question-area').style.display='none';
+    const pct=Math.round(score/questions.length*100);
+    const rs=document.getElementById('results-area');
+    rs.innerHTML=`<div class="results-emoji">${pct>=80?'🏆':pct>=60?'⭐':'📚'}</div>
+      <div class="results-title">${pct>=80?'מצוין! שולט בחומר!':pct>=60?'יפה מאוד, כמעט שם!':'כדאי לחזור על החומר'}</div>
+      <div class="results-score">ענית נכון על <span>${score}/${questions.length}</span> שאלות (${pct}%)</div>
+      <button class="restart-btn" onclick="restartQ()">🔄 נסה שוב</button>`;
+    rs.classList.add('show');
+  } else renderQuestion();
+}
+
+function restartQ() {
+  currentQ=0; score=0; answered=false;
+  document.getElementById('score-display').textContent=0;
+  document.getElementById('question-area').style.display='block';
+  document.getElementById('results-area').classList.remove('show');
+  renderQuestion();
+}
+
+// ===== SIMULATOR =====
+let simX0 = 0, simX1 = 40, simDragging = null;
+const SIM_MIN = -80, SIM_MAX = 80;
+
+function initSim() {
+  const canvas = document.getElementById('simCanvas');
+  if (!canvas || canvas._simInited) return;
+  canvas._simInited = true;
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.offsetWidth * dpr;
+    canvas.height = canvas.offsetHeight * dpr;
+    ctx.scale(dpr, dpr);
+    drawSim();
+  }
+  function xToCanvas(xVal) {
+    return ((xVal - SIM_MIN) / (SIM_MAX - SIM_MIN)) * canvas.offsetWidth;
+  }
+  function canvasToX(px) {
+    const raw = (px / canvas.offsetWidth) * (SIM_MAX - SIM_MIN) + SIM_MIN;
+    return Math.round(raw / 5) * 5;
+  }
+  function clamp(v) { return Math.max(SIM_MIN, Math.min(SIM_MAX, v)); }
+
+  function drawSim() {
+    const w = canvas.offsetWidth, h = canvas.offsetHeight;
+    ctx.clearRect(0, 0, w, h);
+    const axisY = h * 0.65;
+
+    // axis
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(12, axisY); ctx.lineTo(w-12, axisY); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.beginPath(); ctx.moveTo(w-10,axisY-5); ctx.lineTo(w-4,axisY); ctx.lineTo(w-10,axisY+5); ctx.fill();
+
+    // ticks
+    for (let v = SIM_MIN; v <= SIM_MAX; v += 20) {
+      const x = xToCanvas(v);
+      ctx.strokeStyle = v===0 ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = v===0 ? 2 : 1;
+      ctx.beginPath(); ctx.moveTo(x, axisY-8); ctx.lineTo(x, axisY+8); ctx.stroke();
+      ctx.fillStyle = v===0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)';
+      ctx.font = `${v===0?'bold ':''} 11px Heebo, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(v, x, axisY + 20);
+    }
+    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='11px Heebo';
+    ctx.fillText('x, מ', w-20, axisY-12);
+
+    // Δx arrow
+    const cx0 = xToCanvas(simX0), cx1 = xToCanvas(simX1);
+    const dx = simX1 - simX0;
+    if (Math.abs(cx1-cx0) > 6) {
+      const aY = axisY - 28;
+      const col = dx>0 ? '#10b981' : '#ef4444';
+      ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.setLineDash([5,3]);
+      ctx.beginPath(); ctx.moveTo(cx0, aY); ctx.lineTo(cx1, aY); ctx.stroke();
+      ctx.setLineDash([]);
+      const d = dx>0?1:-1;
+      ctx.fillStyle = col;
+      ctx.beginPath(); ctx.moveTo(cx1,aY); ctx.lineTo(cx1-d*9,aY-4); ctx.lineTo(cx1-d*9,aY+4); ctx.fill();
+      ctx.fillStyle = col; ctx.font='bold 10px Heebo'; ctx.textAlign='center';
+      ctx.fillText(`Δx=${dx}מ`, (cx0+cx1)/2, aY-7);
+    }
+
+    // markers
+    ctx.font = '22px serif'; ctx.textAlign='center';
+    ctx.fillText('🏁', cx0, axisY - 4);
+    ctx.fillText('🚗', cx1, axisY - 4);
+
+    updateSimUI();
+  }
+
+  function updateSimUI() {
+    const dt = parseInt(document.getElementById('simTime').value);
+    const dx = simX1 - simX0;
+    const v = dx / dt;
+    const signColor = v>0?'#10b981':v<0?'#ef4444':'#9575cd';
+    document.getElementById('simX0').textContent = `${simX0} מ`;
+    document.getElementById('simX1').innerHTML = `<span style="color:var(--pink)">${simX1} מ</span>`;
+    document.getElementById('simDt').textContent = `${dt} ש׳`;
+    document.getElementById('simCalc').innerHTML =
+      `<div style="direction:rtl;text-align:right;font-family:inherit">
+        Δx = x₁ − x₀ = <strong>${simX1}</strong> − (<strong>${simX0}</strong>) = <strong>${dx} מ</strong>
+      </div>
+      <div style="direction:rtl;text-align:right;font-family:inherit;margin-top:4px">
+        V = Δx ÷ Δt = <strong>${dx}</strong> ÷ <strong>${dt}</strong> = <strong>${v.toFixed(2)} מ/ש</strong>
+      </div>`;
+    document.getElementById('simAnswer').innerHTML =
+      `<div style="direction:rtl;text-align:right">
+        <span style="color:${signColor}">V = ${v.toFixed(2)} מ/ש</span>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">המרה לקמ"ש: ${v.toFixed(2)} × 3.6 = <strong style="color:${signColor}">${(v*3.6).toFixed(2)} קמ"ש</strong></div>
+      </div>`;
+    const note = document.getElementById('simSignNote');
+    note.style.display='block';
+    if(v>0){note.style.cssText='display:block;margin-top:10px;padding:10px 14px;border-radius:10px;font-size:12px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3)';
+      note.innerHTML='✅ <strong style="color:#10b981">מהירות חיובית (+)</strong> – המכונית נוסעת <strong>ימינה</strong> (לכיוון החיובי)';}
+    else if(v<0){note.style.cssText='display:block;margin-top:10px;padding:10px 14px;border-radius:10px;font-size:12px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3)';
+      note.innerHTML='🔴 <strong style="color:#ef4444">מהירות שלילית (−)</strong> – המכונית נוסעת <strong>שמאלה</strong> (לכיוון השלילי)';}
+    else{note.style.cssText='display:block;margin-top:10px;padding:10px 14px;border-radius:10px;font-size:12px;background:rgba(149,117,205,0.1);border:1px solid rgba(149,117,205,0.3)';
+      note.innerHTML='⚪ <strong style="color:#9575cd">מהירות אפס</strong> – המכונית לא זזה';}
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  }
+  function onStart(e) {
+    const px = getPos(e);
+    if(Math.abs(px-xToCanvas(simX1))<35) simDragging='x1';
+    else if(Math.abs(px-xToCanvas(simX0))<35) simDragging='x0';
+    if(simDragging){e.preventDefault(); canvas.style.cursor='grabbing';}
+  }
+  function onMove(e) {
+    if(!simDragging) return; e.preventDefault();
+    const v = clamp(canvasToX(getPos(e)));
+    if(simDragging==='x1') simX1=v; else simX0=v;
+    drawSim();
+  }
+  function onEnd(){simDragging=null; canvas.style.cursor='grab';}
+
+  canvas.addEventListener('mousedown',onStart);
+  canvas.addEventListener('mousemove',onMove);
+  window.addEventListener('mouseup',onEnd);
+  canvas.addEventListener('touchstart',onStart,{passive:false});
+  canvas.addEventListener('touchmove',onMove,{passive:false});
+  canvas.addEventListener('touchend',onEnd);
+  document.getElementById('simTime').addEventListener('input',function(){
+    document.getElementById('simTimeVal').textContent=this.value; drawSim();
+  });
+  window.addEventListener('resize',()=>{canvas._simInited=false; initSim();});
+  resize();
+}
+
+const _origSwitch = switchTab;
+window._simSwitchTab = function(tab, btn) {
+  _origSwitch(tab, btn);
+  if(tab==='sim') setTimeout(initSim, 60);
+};
+
+renderCalcInputs();
+renderQuestion();
+document.querySelector('.section-header').click();
+</script>
+</body>
+</html>
