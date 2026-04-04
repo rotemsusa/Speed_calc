@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מחשבון מס הכנסה 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --gold: #f59e0b;
+    --green: #10b981;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --light: #94a3b8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 32px 16px 64px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(6,182,212,0.2));
+    border: 1px solid rgba(59,130,246,0.4);
+    color: var(--accent2);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-size: clamp(26px, 6vw, 40px);
+    font-weight: 900;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #e2e8f0 30%, #3b82f6 80%, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+  }
+
+  .subtitle { color: var(--muted); font-size: 14px; font-weight: 300; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 18px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .card-title.gold-bar::before { background: var(--gold); }
+  .card-title.green-bar::before { background: var(--green); }
+
+  .input-group { margin-bottom: 16px; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--light);
+    margin-bottom: 7px;
+    font-weight: 400;
+  }
+
+  .input-wrap { position: relative; }
+
+  .input-wrap .currency {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px 12px 40px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    direction: ltr;
+    text-align: right;
+  }
+
+  input[type="number"].small {
+    font-size: 16px;
+    padding: 10px 14px 10px 40px;
+  }
+
+  input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  }
+
+  .credit-presets {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .preset-btn {
+    padding: 5px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    font-family: 'Heebo', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .preset-btn:hover, .preset-btn.active {
+    background: rgba(245,158,11,0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .toggle-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .toggle-btn {
+    padding: 9px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    font-family: 'Heebo', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .toggle-btn.active {
+    background: rgba(59,130,246,0.15);
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .slider-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent2);
+    background: rgba(6,182,212,0.1);
+    padding: 2px 10px;
+    border-radius: 6px;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+    margin-bottom: 16px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.2);
+  }
+
+  .calc-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    font-family: 'Heebo', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 24px rgba(59,130,246,0.3);
+  }
+
+  .calc-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(59,130,246,0.4); }
+  .calc-btn:active { transform: translateY(0); }
+
+  /* ===== BRACKETS COMPARISON TABLE ===== */
+  .brackets-compare-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 18px;
+    animation: fadeUp 0.6s ease 0.15s both;
+  }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .compare-table thead tr { border-bottom: 1px solid var(--border); }
+
+  .compare-table th {
+    padding: 6px 3px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0px;
+    color: var(--muted);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .compare-table th:first-child { width: 28px; }
+  .compare-table th:last-child { width: 48px; }
+
+  .year-head-2025 { color: #f87171 !important; }
+  .year-head-2026 { color: #34d399 !important; }
+
+  .compare-table td {
+    padding: 8px 3px;
+    border-bottom: 1px dashed rgba(255,255,255,0.05);
+    vertical-align: middle;
+  }
+
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr.bracket-active td { background: rgba(59,130,246,0.07); }
+
+  .rate-cell { text-align: center; font-weight: 800; font-size: 14px; }
+  .range-cell { direction: ltr; text-align: center; font-size: 11px; white-space: nowrap; }
+  .range-cell.y2025 { color: #94a3b8; }
+  .range-cell.y2026 { color: var(--text); }
+
+  .diff-cell { text-align: center; font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .diff-pos { color: var(--green); }
+  .diff-none { color: var(--muted); }
+
+  /* ===== RESULTS ===== */
+  .results-card { display: none; animation: fadeUp 0.5s ease both; }
+  .results-card.show { display: block; }
+
+  .result-hero {
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .result-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .result-amount { font-size: clamp(34px, 8vw, 50px); font-weight: 900; color: var(--red); line-height: 1; margin-bottom: 4px; }
+  .result-sub { font-size: 12px; color: var(--muted); }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+
+  .stat-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-label { font-size: 10px; color: var(--muted); margin-bottom: 5px; }
+  .stat-value { font-size: 17px; font-weight: 700; }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+  .stat-value.gold { color: var(--gold); }
+  .stat-value.blue { color: var(--accent2); }
+
+  .brackets-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; }
+
+  .bracket-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .bracket-row.active { border-color: rgba(59,130,246,0.3); background: rgba(59,130,246,0.05); }
+  .bracket-pct { font-size: 14px; font-weight: 700; min-width: 34px; text-align: center; }
+  .bracket-bar-wrap { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .bracket-bar { height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1); width: 0; }
+  .bracket-tax { font-size: 13px; font-weight: 600; min-width: 75px; text-align: left; direction: ltr; }
+  .bracket-range { font-size: 10px; color: var(--muted); min-width: 110px; text-align: right; direction: ltr; }
+
+  .before-after { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
+
+  .ba-title {
+    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 14px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .ba-title::before { content: ''; width: 3px; height: 14px; background: var(--gold); border-radius: 2px; }
+
+  .ba-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 14px; }
+
+  .ba-col { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
+  .ba-col.old { border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.05); }
+  .ba-col.new2026 { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.05); }
+
+  .ba-year { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; font-weight: 700; }
+  .ba-col.old .ba-year { color: #ef4444; }
+  .ba-col.new2026 .ba-year { color: var(--green); }
+
+  .ba-amount { font-size: 20px; font-weight: 900; }
+  .ba-col.old .ba-amount { color: #ef4444; }
+  .ba-col.new2026 .ba-amount { color: var(--green); }
+
+  .ba-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .ba-arrow { text-align: center; font-size: 22px; color: var(--green); }
+
+  .savings-banner {
+    background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(6,182,212,0.1));
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+
+  .savings-title { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--green); margin-bottom: 5px; }
+  .savings-amount { font-size: 30px; font-weight: 900; color: var(--green); }
+  .savings-desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .info-note {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: #d97706;
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 480px) {
+    .bracket-range { display: none; }
+    .ba-amount { font-size: 17px; }
+    .preset-btn { font-size: 10px; padding: 4px 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="badge">עדכון 2026 — מדרגות חדשות</div>
+    <h1>מחשבון מס הכנסה</h1>
+    <p class="subtitle">לפי מדרגות המס המעודכנות לשנת 2026</p>
+  </div>
+
+  <!-- Input Card -->
+  <div class="card">
+    <div class="card-title">הכנסה ונקודות זיכוי</div>
+
+    <div class="toggle-group">
+      <button class="toggle-btn active" onclick="setMode('monthly')">חודשי</button>
+      <button class="toggle-btn" onclick="setMode('annual')">שנתי</button>
+    </div>
+
+    <div class="input-group">
+      <label id="inputLabel">שכר ברוטו חודשי (₪)</label>
+      <div class="input-wrap">
+        <span class="currency">₪</span>
+        <input type="number" id="salaryInput" placeholder="0" min="0" oninput="onSalaryInput(this.value)">
+      </div>
+    </div>
+
+    <div class="slider-label">
+      <label style="margin:0;font-size:12px">סליידר מהיר</label>
+      <span class="slider-value" id="sliderDisplay">₪ 0</span>
+    </div>
+    <input type="range" id="salarySlider" min="0" max="80000" step="500" value="0" oninput="onSliderInput(this.value)">
+
+    <!-- Credit Points -->
+    <div class="input-group">
+      <label>נקודות זיכוי (ערך נקודה 2026: ₪242 לחודש)</label>
+      <div class="input-wrap">
+        <span class="currency" style="font-size:12px;font-weight:500;color:var(--gold)">נק'</span>
+        <input type="number" class="small" id="creditPointsInput" value="2.25" min="0" max="30" step="0.25"
+               oninput="updateCreditDisplay()" style="border-color:rgba(245,158,11,0.4)">
+      </div>
+      <div class="credit-presets">
+        <button class="preset-btn active" onclick="setCredit(2.25,'רווק')">2.25 רווק/ה</button>
+        <button class="preset-btn" onclick="setCredit(2.75,'נשוי')">2.75 נשוי/אה</button>
+        <button class="preset-btn" onclick="setCredit(3.5,'ילד1')">3.5 + ילד 1</button>
+        <button class="preset-btn" onclick="setCredit(4.25,'ילד2')">4.25 + 2 ילדים</button>
+        <button class="preset-btn" onclick="setCredit(5,'ילד3')">5.0 + 3 ילדים</button>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--gold)" id="creditCalcDisplay">
+        ניכוי חודשי: <strong>₪ 545</strong>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">▶ חשב מס</button>
+  </div>
+
+  <!-- Brackets Comparison Table -->
+  <div class="brackets-compare-card">
+    <div class="card-title gold-bar">השוואת מדרגות — 2025 מול 2026</div>
+    <table class="compare-table" id="bracketsTable">
+      <thead>
+        <tr>
+          <th style="text-align:center">שיעור</th>
+          <th class="year-head-2025">טווח 2025 (₪/חודש)</th>
+          <th class="year-head-2026">טווח 2026 (₪/חודש)</th>
+          <th style="text-align:center">הרחבה</th>
+        </tr>
+      </thead>
+      <tbody id="bracketsTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Results Card -->
+  <div class="card results-card" id="resultsCard">
+    <div class="card-title green-bar">תוצאת החישוב — 2026</div>
+
+    <div class="result-hero">
+      <div class="result-label">מס הכנסה לתשלום</div>
+      <div class="result-amount" id="totalTaxDisplay">₪ 0</div>
+      <div class="result-sub" id="effectiveRateDisplay">שיעור מס אפקטיבי: 0%</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">שכר ברוטו חודשי</div>
+        <div class="stat-value blue" id="grossDisplay">₪ 0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">שכר נטו (לאחר מס)</div>
+        <div class="stat-value green" id="netDisplay">₪ 0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">מס שנתי</div>
+        <div class="stat-value red" id="annualTaxDisplay">₪ 0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label" id="creditLabelStat">ניכוי זיכוי (2.25 נק')</div>
+        <div class="stat-value gold" id="creditDisplay">₪ 0</div>
+      </div>
+    </div>
+
+    <div class="brackets-title">פירוט מס לפי מדרגות — 2026</div>
+    <div id="bracketsBreakdown"></div>
+
+    <div class="before-after">
+      <div class="ba-title">לפני ואחרי העדכון</div>
+      <div class="ba-grid">
+        <div class="ba-col old">
+          <div class="ba-year">🔴 2025 לפני</div>
+          <div class="ba-amount" id="tax2025Display">₪ 0</div>
+          <div class="ba-sub">מס חודשי</div>
+        </div>
+        <div class="ba-arrow">→</div>
+        <div class="ba-col new2026">
+          <div class="ba-year">🟢 2026 אחרי</div>
+          <div class="ba-amount" id="tax2026Display">₪ 0</div>
+          <div class="ba-sub">מס חודשי</div>
+        </div>
+      </div>
+      <div class="savings-banner">
+        <div class="savings-title">✨ חיסכון חודשי בזכות העדכון</div>
+        <div class="savings-amount" id="savingsDisplay">₪ 0</div>
+        <div class="savings-desc" id="savingsAnnualDisplay">שנתי: ₪ 0</div>
+      </div>
+    </div>
+
+    <div class="info-note">
+      ⚠️ החישוב אינו כולל ביטוח לאומי, מס בריאות, או ניכויים נוספים.
+    </div>
+  </div>
+
+</div>
+<script>
+const CREDIT_POINT_MONTHLY = 2904 / 12; // 242 ₪
+
+const BRACKETS_2025 = [
+  { min: 0,      max: 7010,     rate: 0.10 },
+  { min: 7010,   max: 10060,    rate: 0.14 },
+  { min: 10060,  max: 16150,    rate: 0.20 },
+  { min: 16150,  max: 22440,    rate: 0.31 },
+  { min: 22440,  max: 46690,    rate: 0.35 },
+  { min: 46690,  max: Infinity,  rate: 0.47 },
+];
+
+const BRACKETS_2026 = [
+  { min: 0,      max: 7010,     rate: 0.10, color: '#22c55e' },
+  { min: 7010,   max: 10060,    rate: 0.14, color: '#84cc16' },
+  { min: 10060,  max: 19000,    rate: 0.20, color: '#eab308' },
+  { min: 19000,  max: 25100,    rate: 0.31, color: '#f97316' },
+  { min: 25100,  max: 46690,    rate: 0.35, color: '#ef4444' },
+  { min: 46690,  max: Infinity,  rate: 0.47, color: '#dc2626' },
+];
+
+function fmt(n) { return Math.round(n).toLocaleString('he-IL'); }
+
+// Build comparison table
+function buildTable() {
+  const tbody = document.getElementById('bracketsTbody');
+  tbody.innerHTML = '';
+  BRACKETS_2026.forEach((b26, i) => {
+    const b25 = BRACKETS_2025[i];
+    const rate = Math.round(b26.rate * 100);
+
+    const r25 = b25.max === Infinity
+      ? `${fmt(b25.min)}+`
+      : `${fmt(b25.min)} – ${fmt(b25.max)}`;
+    const r26 = b26.max === Infinity
+      ? `${fmt(b26.min)}+`
+      : `${fmt(b26.min)} – ${fmt(b26.max)}`;
+
+    const w25 = b25.max === Infinity ? 0 : (b25.max - b25.min);
+    const w26 = b26.max === Infinity ? 0 : (b26.max - b26.min);
+    const diff = w26 - w25;
+    const diffTxt = b26.max === Infinity ? '—' : (diff > 0 ? `+${fmt(diff)}` : (diff === 0 ? '—' : fmt(diff)));
+    const diffCls = diff > 0 ? 'diff-pos' : 'diff-none';
+
+    const tr = document.createElement('tr');
+    tr.id = `brow-${i}`;
+    tr.innerHTML = `
+      <td class="rate-cell" style="color:${b26.color}">${rate}%</td>
+      <td class="range-cell y2025">${r25}</td>
+      <td class="range-cell y2026">${r26}</td>
+      <td class="diff-cell ${diffCls}">${diffTxt}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Mode
+let mode = 'monthly';
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.toggle-btn').forEach((b, i) =>
+    b.classList.toggle('active', (i===0&&m==='monthly')||(i===1&&m==='annual')));
+  document.getElementById('inputLabel').textContent =
+    m === 'monthly' ? 'שכר ברוטו חודשי (₪)' : 'שכר ברוטו שנתי (₪)';
+  const mx = m === 'monthly' ? 80000 : 960000;
+  document.getElementById('salarySlider').max = mx;
+  document.getElementById('salarySlider').step = m === 'monthly' ? 500 : 6000;
+}
+
+function onSalaryInput(v) {
+  const val = parseFloat(v) || 0;
+  document.getElementById('salarySlider').value = Math.min(val, mode==='monthly'?80000:960000);
+  document.getElementById('sliderDisplay').textContent = '₪ ' + fmt(val);
+}
+
+function onSliderInput(v) {
+  document.getElementById('salaryInput').value = v;
+  document.getElementById('sliderDisplay').textContent = '₪ ' + fmt(parseFloat(v)||0);
+}
+
+// Credit points
+function setCredit(pts, key) {
+  document.getElementById('creditPointsInput').value = pts;
+  updateCreditDisplay();
+  document.querySelectorAll('.preset-btn').forEach(b =>
+    b.classList.toggle('active', b.textContent.trim().startsWith(pts.toString())));
+}
+
+function updateCreditDisplay() {
+  const pts = parseFloat(document.getElementById('creditPointsInput').value) || 0;
+  document.getElementById('creditCalcDisplay').innerHTML =
+    `ניכוי חודשי: <strong>₪ ${fmt(pts * CREDIT_POINT_MONTHLY)}</strong>`;
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+}
+
+// Tax calc
+function calcTax(gross, brackets, credit) {
+  let tax = 0, breakdown = [];
+  for (const b of brackets) {
+    if (gross <= b.min) break;
+    const taxable = Math.min(gross, b.max) - b.min;
+    const amount = taxable * b.rate;
+    tax += amount;
+    breakdown.push({ ...b, taxable, amount });
+  }
+  return { tax, netTax: Math.max(0, tax - credit), breakdown };
+}
+
+function calculate() {
+  const raw = parseFloat(document.getElementById('salaryInput').value) || 0;
+  if (raw <= 0) { alert('אנא הכנס שכר תקין'); return; }
+
+  const monthly = mode === 'monthly' ? raw : raw / 12;
+  const pts = parseFloat(document.getElementById('creditPointsInput').value) || 0;
+  const credit = pts * CREDIT_POINT_MONTHLY;
+
+  const { tax: t26, netTax: net26, breakdown } = calcTax(monthly, BRACKETS_2026, credit);
+  const { netTax: net25 } = calcTax(monthly, BRACKETS_2025, credit);
+
+  const netSalary = monthly - net26;
+  const effRate = monthly > 0 ? (net26 / monthly * 100) : 0;
+  const savings = Math.max(0, net25 - net26);
+
+  document.getElementById('totalTaxDisplay').textContent = '₪ ' + fmt(net26);
+  document.getElementById('effectiveRateDisplay').textContent =
+    `שיעור אפקטיבי: ${effRate.toFixed(1)}% | לפני זיכוי: ₪${fmt(t26)}`;
+  document.getElementById('grossDisplay').textContent = '₪ ' + fmt(monthly);
+  document.getElementById('netDisplay').textContent = '₪ ' + fmt(netSalary);
+  document.getElementById('annualTaxDisplay').textContent = '₪ ' + fmt(net26 * 12);
+  document.getElementById('creditLabelStat').textContent = `ניכוי זיכוי (${pts} נק')`;
+  document.getElementById('creditDisplay').textContent = '₪ ' + fmt(credit);
+
+  document.getElementById('tax2025Display').textContent = '₪ ' + fmt(net25);
+  document.getElementById('tax2026Display').textContent = '₪ ' + fmt(net26);
+  document.getElementById('savingsDisplay').textContent = savings > 0 ? '₪ ' + fmt(savings) : '₪ 0';
+  document.getElementById('savingsAnnualDisplay').textContent =
+    savings > 0 ? `חיסכון שנתי: ₪ ${fmt(savings * 12)}` : 'אין הפרש במדרגה זו';
+
+  // Breakdown bars
+  const cont = document.getElementById('bracketsBreakdown');
+  cont.innerHTML = '';
+  const maxT = Math.max(...breakdown.map(b => b.amount), 1);
+  breakdown.forEach(b => {
+    const active = b.amount > 0;
+    const pct = Math.round(b.rate * 100);
+    const bw = active ? Math.max(4, (b.amount / maxT) * 100) : 0;
+    const col = b.color || '#64748b';
+    const row = document.createElement('div');
+    row.className = 'bracket-row' + (active ? ' active' : '');
+    row.innerHTML = `
+      <span class="bracket-pct" style="color:${col}">${pct}%</span>
+      <div class="bracket-bar-wrap">
+        <div class="bracket-bar" style="background:${col};width:0%" data-width="${bw}%"></div>
+      </div>
+      <span class="bracket-tax" style="color:${active?col:'var(--border)'}">
+        ${active ? '₪'+fmt(b.amount) : '—'}
+      </span>
+      <span class="bracket-range">₪${fmt(b.min)}${b.max===Infinity?'+':'–₪'+fmt(b.max)}</span>
+    `;
+    cont.appendChild(row);
+  });
+
+  // Highlight active rows in comparison table
+  BRACKETS_2026.forEach((b, i) => {
+    const tr = document.getElementById(`brow-${i}`);
+    if (tr) tr.classList.toggle('bracket-active', monthly > b.min);
+  });
+
+  const card = document.getElementById('resultsCard');
+  card.classList.add('show');
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('.bracket-bar').forEach(bar => { bar.style.width = bar.dataset.width; });
+  }));
+
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+document.getElementById('salaryInput').addEventListener('keydown', e => { if (e.key==='Enter') calculate(); });
+
+// Init
+buildTable();
+updateCreditDisplay();
+document.querySelector('.preset-btn').classList.add('active');
+</script>
+</body>
+</html>
